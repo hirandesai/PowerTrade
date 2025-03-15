@@ -8,11 +8,11 @@ namespace PowerTrade.Business.Services.Dtos
 {
     public record IntraDayReportSchedulerConfig
     {
-        public int FrequencyMin { get; private set; }
+        public int FrequencyInSec { get; private set; }
         
         public IntraDayReportSchedulerConfig(int frequencyMin)
         {
-            FrequencyMin = frequencyMin;
+            FrequencyInSec = frequencyMin;
         }
     }
 }

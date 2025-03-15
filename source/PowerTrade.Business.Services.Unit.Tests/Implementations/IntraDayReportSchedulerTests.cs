@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using PowerTrade.Business.Services.Abstracts;
 using PowerTrade.Business.Services.Dtos;
@@ -19,12 +20,13 @@ namespace PowerTrade.Business.Services.Unit.Tests.Implementations
         [SetUp]
         public void Setup()
         {
-            config = new IntraDayReportSchedulerConfig(1);
+            var logger = new Mock<ILogger<IntraDayReportScheduler>>();
             queueService = new Mock<IQueueService<IntraDaySchedule>>();
             dateTimeProvieder = new Mock<IDateTimeProvieder>();
             dateTimeProvieder.Setup(q => q.CurrentTime).Returns(CurrentTime);
+            config = new IntraDayReportSchedulerConfig(1);
 
-            intraDayReportScheduler = new IntraDayReportScheduler(config, queueService.Object, dateTimeProvieder.Object);
+            intraDayReportScheduler = new IntraDayReportScheduler(logger.Object, queueService.Object, dateTimeProvieder.Object, config);
         }
 
         [Test]
@@ -46,7 +48,7 @@ namespace PowerTrade.Business.Services.Unit.Tests.Implementations
         {
             // Arrange
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(1));
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
 
             // Act
             await intraDayReportScheduler.Start(cancellationTokenSource.Token);
