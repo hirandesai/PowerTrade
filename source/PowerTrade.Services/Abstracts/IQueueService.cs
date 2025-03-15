@@ -4,6 +4,6 @@
     {
         Task AddAsync(T item);
 
-        Task<T> Read();
+        Task<T?> ReadAsync();
     }
 }
