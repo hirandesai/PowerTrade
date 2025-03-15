@@ -2,10 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/source/PowerTrade/.vs/PowerTrade
-/source/PowerTrade/PowerTrade/bin/Debug/net8.0
-/source/PowerTrade/PowerTrade/obj
-/source/.vs/PowerTrade/FileContentIndex
-/source/PowerTrade/.vs/ProjectEvaluation
-/source/PowerTrade/bin/Debug/net8.0
-/source/PowerTrade/obj
+
+**/.vs/
+**/bin/
+**/obj
