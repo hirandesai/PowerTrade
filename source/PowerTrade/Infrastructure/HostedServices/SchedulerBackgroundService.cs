@@ -1,17 +1,23 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PowerTrade.Business.Services.Abstracts;
 
 namespace PowerTrade.Infrastructure.HostedServices
 {
     public class SchedulerBackgroundService : BackgroundService
     {
-        private readonly IIntraDayReportScheduler scheduler;
+        private readonly IServiceScopeFactory serviceScopeFactory;
 
-        public SchedulerBackgroundService(IIntraDayReportScheduler scheduler)
+        public SchedulerBackgroundService(IServiceScopeFactory serviceScopeFactory)
         {
-            this.scheduler = scheduler;
+            this.serviceScopeFactory = serviceScopeFactory;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken) => await scheduler.Start(stoppingToken);
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            using var scope = serviceScopeFactory.CreateScope();
+            var scheduler = scope.ServiceProvider.GetService<IIntraDayReportScheduler>();
+            await scheduler.Start(stoppingToken);
+        }
     }
 }

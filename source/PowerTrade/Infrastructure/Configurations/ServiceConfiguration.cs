@@ -6,6 +6,7 @@ using PowerTrade.Business.Services.Abstracts;
 using PowerTrade.Business.Services.Dtos;
 using PowerTrade.Business.Services.Implementations;
 using PowerTrade.Dto;
+using PowerTrade.Infrastructure.HostedServices;
 using PowerTrade.Services.Abstracts;
 using PowerTrade.Services.Implementations;
 
@@ -15,6 +16,8 @@ namespace PowerTrade.Infrastructure.Configurations
     {
         public static void AddAppServices(this IServiceCollection serviceProvider, IConfiguration configuration)
         {
+            serviceProvider.AddHostedService<SchedulerBackgroundService>();
+
             AddBusinessServices(serviceProvider, configuration);
             AddServices(serviceProvider);
         }
