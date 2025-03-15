@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Projects\PowerTrade\PowerTrade\source\PowerTrade\PowerTrade\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\Projects\PowerTrade\PowerTrade\source\PowerTrade\PowerTrade\.editorconfig" />
+  </ItemGroup>
+
 </Project>
