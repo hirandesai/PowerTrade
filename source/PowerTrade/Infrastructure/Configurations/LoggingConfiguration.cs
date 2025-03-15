@@ -6,7 +6,7 @@ namespace PowerTrade.Infrastructure.Configurations
 {
     public static class LoggingConfiguration
     {
-        public static void AddLogging(IServiceCollection serviceProvider)
+        public static void AddAppLogging(this IServiceCollection serviceProvider)
         {
             Log.Logger = new LoggerConfiguration()
                             .WriteTo.Console()

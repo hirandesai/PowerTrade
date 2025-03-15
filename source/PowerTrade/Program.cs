@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PowerTrade.Infrastructure.Configurations;
 
 #if DEBUG
 Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
@@ -20,7 +21,8 @@ var builder = Host.CreateDefaultBuilder(args)
                     })
                     .ConfigureServices((hostContext, services) =>
                     {
-                        services.AddLogging();
+                        services.AddAppLogging();
+                        services.AddAppServices(hostContext.Configuration);
                     })
                     .UseConsoleLifetime()
                     .Build();
