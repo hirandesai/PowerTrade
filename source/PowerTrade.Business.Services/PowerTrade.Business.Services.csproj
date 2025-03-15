@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstracts\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PowerTrade.Services\PowerTrade.Services.csproj" />
   </ItemGroup>
 

@@ -1,9 +1,10 @@
-﻿using PowerTrade.Business.Services.Dtos;
+﻿using PowerTrade.Business.Services.Abstracts;
+using PowerTrade.Business.Services.Dtos;
 using PowerTrade.Services.Abstracts;
 
 namespace PowerTrade.Business.Services.Implementations
 {
-    public class IntraDayReportScheduler
+    public class IntraDayReportScheduler: IIntraDayReportScheduler
     {
         private readonly IntraDayReportSchedulerConfig config;
         private readonly IQueueService<IntraDaySchedule> queueService;
@@ -20,13 +21,9 @@ namespace PowerTrade.Business.Services.Implementations
 
         public async Task Start(CancellationToken token)
         {
-            while (true)
-            {
-                if (token.IsCancellationRequested)
-                    break;
-
+            while (!token.IsCancellationRequested)
+            {                
                 await queueService.AddAsync(new IntraDaySchedule(dateTimeProvieder.CurrentTime));
-
                 await Task.Delay(GetWaitTimeInMs);
             }
         }
