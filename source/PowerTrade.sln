@@ -19,6 +19,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerTrade.Business.Services.Unit.Tests", "PowerTrade.Business.Services.Unit.Tests\PowerTrade.Business.Services.Unit.Tests.csproj", "{32924C5D-2613-41C4-BFF2-728E8EE8D644}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalLib", "ExternalLib", "{3230D7FE-D01F-4847-A0BA-9D7EED8121DE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerService", "PowerService", "{17C5A599-DE5C-4039-83C3-182C7C690551}"
+	ProjectSection(SolutionItems) = preProject
+		..\ExternalLib\PowerService\PowerService.deps.json = ..\ExternalLib\PowerService\PowerService.deps.json
+		..\ExternalLib\PowerService\PowerService.dll = ..\ExternalLib\PowerService\PowerService.dll
+		..\ExternalLib\PowerService\PowerService.pdb = ..\ExternalLib\PowerService\PowerService.pdb
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +63,7 @@ Global
 		{6E72C36C-F2D0-41BD-B959-3F8C8416DFAA} = {861AF35D-B4F8-4746-846F-2CE08DCD59B5}
 		{EDF76052-ADB8-410F-AC33-263789B00529} = {22B99777-D254-4324-AC37-689CFC335658}
 		{32924C5D-2613-41C4-BFF2-728E8EE8D644} = {EDF76052-ADB8-410F-AC33-263789B00529}
+		{17C5A599-DE5C-4039-83C3-182C7C690551} = {3230D7FE-D01F-4847-A0BA-9D7EED8121DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {334169B0-67E4-4C30-85B8-35EF9EA5C5F9}
