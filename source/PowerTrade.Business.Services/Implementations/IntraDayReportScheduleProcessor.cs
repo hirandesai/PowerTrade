@@ -69,13 +69,17 @@ namespace PowerTrade.Business.Services.Implementations
                 schedule.IncrementRetry();
                 if (schedule.RetryCount <= 3)
                 {
-                    // [TODO]: Imporve Design:
+                    // TODO: Imporve Design:
                     // I would have preferred something here that supports delayed retry but current choice of 
                     // IQueue implementation doesnot support this.
                     await queueService.AddAsync(schedule);
                 }
                 else
-                    logger.LogError("Schedule {@schedule} cannot be processed after retries", ex, schedule);
+                {
+                    // TODO: Given immediate & delayed retries has failed, the schedule should be saved 
+                    // so a more later retry can be processed. This will also help in monitoring
+                    logger.LogCritical("Schedule {@schedule} cannot be processed after retries", ex, schedule);
+                }                    
             }
         }
 

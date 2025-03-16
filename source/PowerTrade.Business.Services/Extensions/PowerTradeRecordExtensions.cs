@@ -8,31 +8,49 @@ namespace PowerTrade.Business.Services.Extensions
         public static AggregatedPowerTradeRecord[] ToAggregated(this PowerTradeRecord[] trades, DateTime tradeRequestTimeUtc, string localTimeZoneId)
         {
             TimeZoneInfo localTimeZone = TimeZoneInfo.FindSystemTimeZoneById(localTimeZoneId);
-            var tradeStartTime = new DateTime(tradeRequestTimeUtc.Year, tradeRequestTimeUtc.Month, tradeRequestTimeUtc.Day, tradeRequestTimeUtc.Hour, 00, 00, DateTimeKind.Utc);
+            var localTime = AdjustToLocalTime(tradeRequestTimeUtc, localTimeZone);
+            var tradeStartLocalTime = new DateTime(localTime.Year, localTime.Month, localTime.Day, localTime.Hour, 00, 00);
             return trades
                     .SelectMany(q => q.Periods)
                     .Select(s =>
                     {
-                        DateTime utcDate = AdjustToLocalTime(s, tradeStartTime, localTimeZone);
+                        DateTime localTime = AdjustToLocalTime(s, tradeStartLocalTime, localTimeZone);
                         return new
                         {
-                            UtcDate = utcDate,
+                            LocalTime = localTime,
                             Volume = s.Volume
                         };
                     })
-                    .GroupBy(g => g.UtcDate)
-                    .Select(s => new AggregatedPowerTradeRecord(s.Key, s.Sum(g => g.Volume)))
+                    .GroupBy(g => g.LocalTime)
+                    .Select(s => new AggregatedPowerTradeRecord(AdjustToUtcTime(s.Key, localTimeZone), s.Sum(g => g.Volume)))
                     .ToArray();
         }
         private static DateTime AdjustToLocalTime(PowerPeriod tradePeriod, DateTime tradeStartTime, TimeZoneInfo timeZoneInfo)
         {
             var tradeTime = tradeStartTime.AddHours(tradePeriod.Period);
-            return TimeZoneInfo.ConvertTimeFromUtc(tradeTime, timeZoneInfo);
+            if (timeZoneInfo.IsInvalidTime(tradeTime))
+            {
+                var adjustmentRules = timeZoneInfo.GetAdjustmentRules().FirstOrDefault(r => r.DateStart <= tradeTime && r.DateEnd >= tradeTime);
+                var gapDuration = adjustmentRules?.DaylightDelta ?? TimeSpan.FromHours(1);
+                return tradeTime.Add(gapDuration);
+            }
+            else if (timeZoneInfo.IsAmbiguousTime(tradeTime))
+            {
+                var offsets = timeZoneInfo.GetAmbiguousTimeOffsets(tradeTime);
+                var offsetToUse = offsets.Min();
+                return tradeTime - offsetToUse;
+            }
+            return tradeTime;
         }
 
         private static DateTime AdjustToUtcTime(DateTime time, TimeZoneInfo timeZoneInfo)
         {
             return TimeZoneInfo.ConvertTimeToUtc(time, timeZoneInfo);
+        }
+
+        private static DateTime AdjustToLocalTime(DateTime time, TimeZoneInfo timeZoneInfo)
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(time, timeZoneInfo);
         }
     }
 }
