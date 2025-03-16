@@ -15,7 +15,8 @@ namespace PowerTrade.Business.Services.Unit.Tests.Implementations
 
         private IIntraDayReportScheduler intraDayReportScheduler;
 
-        DateTime CurrentTime = new DateTime(2025, 03, 15, 10, 59, 00, DateTimeKind.Utc);
+        DateTime CurrentTime = new DateTime(2025, 03, 15, 10, 59, 00, DateTimeKind.Unspecified);
+        DateTime CurrentUtcTime = new DateTime(2025, 03, 15, 11, 59, 00, DateTimeKind.Utc);
 
         [SetUp]
         public void Setup()
@@ -24,6 +25,7 @@ namespace PowerTrade.Business.Services.Unit.Tests.Implementations
             queueService = new Mock<IQueueService<IntraDaySchedule>>();
             dateTimeProvieder = new Mock<IDateTimeProvieder>();
             dateTimeProvieder.Setup(q => q.CurrentTime).Returns(CurrentTime);
+            dateTimeProvieder.Setup(q => q.CurrentUtcTime).Returns(CurrentUtcTime);
             config = new IntraDayReportSchedulerConfig(1);
 
             intraDayReportScheduler = new IntraDayReportScheduler(logger.Object, queueService.Object, dateTimeProvieder.Object, config);
@@ -54,12 +56,13 @@ namespace PowerTrade.Business.Services.Unit.Tests.Implementations
             await intraDayReportScheduler.Start(cancellationTokenSource.Token);
 
             // Assert
-            queueService.Verify(q => q.AddAsync(It.Is<IntraDaySchedule>(schedule => AssertIntraDaySchedule(schedule, CurrentTime))), Times.AtLeastOnce());
+            queueService.Verify(q => q.AddAsync(It.Is<IntraDaySchedule>(schedule => AssertIntraDaySchedule(schedule, CurrentTime, CurrentUtcTime))), Times.AtLeastOnce());
         }
 
-        private bool AssertIntraDaySchedule(IntraDaySchedule schedule, DateTime expectedScheduleTime)
+        private bool AssertIntraDaySchedule(IntraDaySchedule schedule, DateTime expectedScheduleLocalTime, DateTime expectedScheduleUtcTime)
         {
-            Assert.That(schedule.ScheduleTime, Is.EqualTo(expectedScheduleTime));
+            Assert.That(schedule.ScheduleLocalTime, Is.EqualTo(expectedScheduleLocalTime));
+            Assert.That(schedule.ScheduleUtcTime, Is.EqualTo(expectedScheduleUtcTime));
             return true;
         }
     }

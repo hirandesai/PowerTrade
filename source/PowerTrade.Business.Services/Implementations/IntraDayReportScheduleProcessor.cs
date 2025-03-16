@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PowerTrade.Business.Services.Abstracts;
 using PowerTrade.Business.Services.Dtos;
+using PowerTrade.Business.Services.Extensions;
 using PowerTrade.Services.Abstracts;
 
 namespace PowerTrade.Business.Services.Implementations
@@ -37,9 +38,9 @@ namespace PowerTrade.Business.Services.Implementations
 
         private async Task ProcessSchedule(IntraDaySchedule schedule)
         {
-            var nextDayDate = schedule.ScheduleTime.Date.AddDays(1).AddMinutes(-1).Date;
+            var nextDayDate = schedule.ScheduleLocalTime.ToNextDayDate();
             var trades = await powerServiceClient.GetTradesAsync(nextDayDate);
-            
+            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleLocalTime);
         }
     }
 }

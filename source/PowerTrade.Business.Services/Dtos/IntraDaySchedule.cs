@@ -2,11 +2,13 @@
 {
     public record IntraDaySchedule
     {
-        public DateTime ScheduleTime { get; private set; }
+        public DateTime ScheduleLocalTime { get; private set; }
+        public DateTime ScheduleUtcTime { get; private set; }
 
-        public IntraDaySchedule(DateTime scheduleTime)
+        public IntraDaySchedule(DateTime scheduleLocalTime, DateTime scheduleUtcTime)
         {
-            this.ScheduleTime = scheduleTime;
+            ScheduleLocalTime = scheduleLocalTime;
+            ScheduleUtcTime = scheduleUtcTime;
         }
     }
 }

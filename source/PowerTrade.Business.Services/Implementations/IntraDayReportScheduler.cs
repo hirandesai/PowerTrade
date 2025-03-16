@@ -27,10 +27,11 @@ namespace PowerTrade.Business.Services.Implementations
         {
             while (!token.IsCancellationRequested)
             {
-                var currentTime = dateTimeProvieder.CurrentTime;
-                logger.LogInformation($"Triggering new scheule at {currentTime}");
+                var currentLocalTime = dateTimeProvieder.CurrentTime;
+                var currentUtcTime = dateTimeProvieder.CurrentUtcTime;
+                logger.LogInformation($"Triggering new scheule at local {currentLocalTime}");
                 
-                await queueService.AddAsync(new IntraDaySchedule(currentTime));
+                await queueService.AddAsync(new IntraDaySchedule(currentLocalTime, currentUtcTime));
                 
                 await Task.Delay(GetWaitTimeInMs);
             }
