@@ -4,7 +4,7 @@
     {
         public static DateTime ToNextDayDate(this DateTime dateTime)
         {
-            return dateTime.Date.AddDays(1).AddMinutes(-1).Date;
+            return dateTime.AddDays(1).AddMinutes(-1).Date;
         }
     }
 }

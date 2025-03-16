@@ -8,16 +8,24 @@ namespace PowerTrade.Business.Services.Implementations
 {
     public class IntraDayReportScheduleProcessor : IIntraDayReportScheduleProcessor
     {
+        private const int DelayTimeWhenScheduleIsNotFound = 3;
         private readonly ILogger<IntraDayReportScheduler> logger;
         private readonly IQueueService<IntraDaySchedule> queueService;
         private readonly IPowerServiceClient powerServiceClient;
+        private readonly IIntraDayReportCsvWriter intraDayReportCsvWriter;
+        private readonly IntraDayReportScheduleProcessorConfig reportConfig;
+
         public IntraDayReportScheduleProcessor(ILogger<IntraDayReportScheduler> logger,
                                                 IQueueService<IntraDaySchedule> queueService,
-                                                IPowerServiceClient powerServiceClient)
+                                                IPowerServiceClient powerServiceClient,
+                                                IIntraDayReportCsvWriter intraDayReportCsvWriter,
+                                                IntraDayReportScheduleProcessorConfig reportConfig)
         {
             this.logger = logger;
             this.queueService = queueService;
             this.powerServiceClient = powerServiceClient;
+            this.intraDayReportCsvWriter = intraDayReportCsvWriter;
+            this.reportConfig = reportConfig;
         }
 
         public async Task Start(CancellationToken token)
@@ -26,12 +34,14 @@ namespace PowerTrade.Business.Services.Implementations
 
             while (!token.IsCancellationRequested)
             {
-                var schedule = await queueService.ReadAsync();
-                if (schedule != null)
+                await Actions.ExecuteWithErrorHandle(async () =>
                 {
-                    await ProcessSchedule(schedule);
-                }
-                await Task.Delay(1);
+                    var schedule = await queueService.ReadAsync();
+                    if (schedule != null)
+                        await ProcessSchedule(schedule);
+                    else
+                        await Task.Delay(DelayTimeWhenScheduleIsNotFound * 1000);
+                }, logger);
             }
             logger.LogInformation("Stopping schdule processor");
         }
@@ -40,7 +50,10 @@ namespace PowerTrade.Business.Services.Implementations
         {
             var nextDayDate = schedule.ScheduleLocalTime.ToNextDayDate();
             var trades = await powerServiceClient.GetTradesAsync(nextDayDate);
-            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleLocalTime);
+
+            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleLocalTime, reportConfig.LocalTimezoneId);
+
+            await intraDayReportCsvWriter.GenerateAsync(schedule.ScheduleUtcTime, nextDayDate, aggregatedTrades);
         }
     }
 }

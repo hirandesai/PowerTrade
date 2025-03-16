@@ -9,7 +9,11 @@ Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
 
 var env = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
-var builder = Host.CreateDefaultBuilder(args)                    
+var builder = Host.CreateDefaultBuilder(args)
+                    .ConfigureHostOptions(hostOptions =>
+                    {
+                        hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+                    })
                     .ConfigureAppConfiguration(config =>
                     {
                         config
@@ -21,6 +25,7 @@ var builder = Host.CreateDefaultBuilder(args)
                     })
                     .ConfigureServices((hostContext, services) =>
                     {
+
                         services.AddAppLogging();
                         services.AddAppServices(hostContext.Configuration);
                     })
