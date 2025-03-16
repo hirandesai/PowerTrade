@@ -2,7 +2,8 @@
 {
     public interface IDateTimeProvieder
     {
-        DateTime CurrentTime { get; }
-        public DateTime CurrentUtcTime => DateTime.UtcNow;
+        DateTime CurrentUtcTime => DateTime.UtcNow;
+
+        DateTime GetLocalTime(DateTime utcTime, string timeZone);
     }
 }

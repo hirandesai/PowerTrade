@@ -13,18 +13,21 @@ namespace PowerTrade.Business.Services.Implementations
         private readonly IQueueService<IntraDaySchedule> queueService;
         private readonly IPowerServiceClient powerServiceClient;
         private readonly IIntraDayReportCsvWriter intraDayReportCsvWriter;
+        private readonly IDateTimeProvieder dateTimeProvieder;
         private readonly IntraDayReportScheduleProcessorConfig reportConfig;
 
         public IntraDayReportScheduleProcessor(ILogger<IntraDayReportScheduler> logger,
                                                 IQueueService<IntraDaySchedule> queueService,
                                                 IPowerServiceClient powerServiceClient,
                                                 IIntraDayReportCsvWriter intraDayReportCsvWriter,
+                                                IDateTimeProvieder dateTimeProvieder,
                                                 IntraDayReportScheduleProcessorConfig reportConfig)
         {
             this.logger = logger;
             this.queueService = queueService;
             this.powerServiceClient = powerServiceClient;
             this.intraDayReportCsvWriter = intraDayReportCsvWriter;
+            this.dateTimeProvieder = dateTimeProvieder;
             this.reportConfig = reportConfig;
         }
 
@@ -48,10 +51,11 @@ namespace PowerTrade.Business.Services.Implementations
 
         private async Task ProcessSchedule(IntraDaySchedule schedule)
         {
-            var nextDayDate = schedule.ScheduleLocalTime.ToNextDayDate();
+            var localTime = dateTimeProvieder.GetLocalTime(schedule.ScheduleUtcTime, reportConfig.LocalTimezoneId);
+            var nextDayDate = localTime.ToNextDayDate();
             var trades = await powerServiceClient.GetTradesAsync(nextDayDate);
 
-            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleLocalTime, reportConfig.LocalTimezoneId);
+            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleUtcTime, reportConfig.LocalTimezoneId);
 
             await intraDayReportCsvWriter.GenerateAsync(schedule.ScheduleUtcTime, nextDayDate, aggregatedTrades);
         }

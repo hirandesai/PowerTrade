@@ -15,7 +15,6 @@ namespace PowerTrade.Business.Services.Unit.Tests.Implementations
 
         private IIntraDayReportScheduler intraDayReportScheduler;
 
-        DateTime CurrentTime = new DateTime(2025, 03, 15, 10, 59, 00, DateTimeKind.Unspecified);
         DateTime CurrentUtcTime = new DateTime(2025, 03, 15, 11, 59, 00, DateTimeKind.Utc);
 
         [SetUp]
@@ -24,7 +23,6 @@ namespace PowerTrade.Business.Services.Unit.Tests.Implementations
             var logger = new Mock<ILogger<IntraDayReportScheduler>>();
             queueService = new Mock<IQueueService<IntraDaySchedule>>();
             dateTimeProvieder = new Mock<IDateTimeProvieder>();
-            dateTimeProvieder.Setup(q => q.CurrentTime).Returns(CurrentTime);
             dateTimeProvieder.Setup(q => q.CurrentUtcTime).Returns(CurrentUtcTime);
             config = new IntraDayReportSchedulerConfig(1);
 
@@ -56,12 +54,11 @@ namespace PowerTrade.Business.Services.Unit.Tests.Implementations
             await intraDayReportScheduler.Start(cancellationTokenSource.Token);
 
             // Assert
-            queueService.Verify(q => q.AddAsync(It.Is<IntraDaySchedule>(schedule => AssertIntraDaySchedule(schedule, CurrentTime, CurrentUtcTime))), Times.AtLeastOnce());
+            queueService.Verify(q => q.AddAsync(It.Is<IntraDaySchedule>(schedule => AssertIntraDaySchedule(schedule, CurrentUtcTime))), Times.AtLeastOnce());
         }
 
-        private bool AssertIntraDaySchedule(IntraDaySchedule schedule, DateTime expectedScheduleLocalTime, DateTime expectedScheduleUtcTime)
+        private bool AssertIntraDaySchedule(IntraDaySchedule schedule, DateTime expectedScheduleUtcTime)
         {
-            Assert.That(schedule.ScheduleLocalTime, Is.EqualTo(expectedScheduleLocalTime));
             Assert.That(schedule.ScheduleUtcTime, Is.EqualTo(expectedScheduleUtcTime));
             return true;
         }

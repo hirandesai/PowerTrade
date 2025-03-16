@@ -30,11 +30,10 @@ namespace PowerTrade.Business.Services.Implementations
             {
                 await Actions.ExecuteWithErrorHandle(async () =>
                 {
-                    var currentLocalTime = dateTimeProvieder.CurrentTime;
                     var currentUtcTime = dateTimeProvieder.CurrentUtcTime;
-                    logger.LogInformation($"Triggering new scheule at local {currentLocalTime}");
+                    logger.LogInformation("Triggering new scheule at {@currentUtcTime}", currentUtcTime);
 
-                    await queueService.AddAsync(new IntraDaySchedule(currentLocalTime, currentUtcTime));
+                    await queueService.AddAsync(new IntraDaySchedule(currentUtcTime));
 
                     await Task.Delay(GetWaitTimeInMs);
                 }, logger);
