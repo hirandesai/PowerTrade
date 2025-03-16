@@ -54,12 +54,14 @@ namespace PowerTrade.Infrastructure.Configurations
                 var queueService = serviceProvider.GetService<IQueueService<IntraDaySchedule>>();
                 var powerServiceClient = serviceProvider.GetService<IPowerServiceClient>();
                 var intraDayReportCsvWriter = serviceProvider.GetService<IIntraDayReportCsvWriter>();
+                var dateTimeProvider = serviceProvider.GetService<IDateTimeProvieder>();
                 var intraDayReportConfig = GetIntraDayReportConfig(serviceProvider);
 
                 return new IntraDayReportScheduleProcessor(logger,
                                                     queueService,
                                                     powerServiceClient,
                                                     intraDayReportCsvWriter,
+                                                    dateTimeProvider,
                                                     new IntraDayReportScheduleProcessorConfig(intraDayReportConfig.LocalTimezoneId));
             });
         }

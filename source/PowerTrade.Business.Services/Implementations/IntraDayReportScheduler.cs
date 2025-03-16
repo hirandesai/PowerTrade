@@ -30,7 +30,7 @@ namespace PowerTrade.Business.Services.Implementations
             {
                 await Actions.ExecuteWithErrorHandle(async () =>
                 {
-                    var schedule = new IntraDaySchedule(dateTimeProvieder.CurrentTime, dateTimeProvieder.CurrentUtcTime);                    
+                    var schedule = new IntraDaySchedule(dateTimeProvieder.CurrentUtcTime);                    
                     logger.LogInformation("Triggering new scheule {@schedule}", schedule);
 
                     await queueService.AddAsync(schedule);

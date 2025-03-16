@@ -8,7 +8,7 @@
 
         public PowerPeriod[] Periods { get; }
 
-        private PowerTradeRecord(string tradeId, DateTime date, PowerPeriod[] periods)
+        public PowerTradeRecord(string tradeId, DateTime date, PowerPeriod[] periods)
         {
             TradeId = tradeId;
             Date = date;

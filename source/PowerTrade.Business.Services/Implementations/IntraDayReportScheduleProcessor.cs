@@ -13,18 +13,21 @@ namespace PowerTrade.Business.Services.Implementations
         private readonly IQueueService<IntraDaySchedule> queueService;
         private readonly IPowerServiceClient powerServiceClient;
         private readonly IIntraDayReportCsvWriter intraDayReportCsvWriter;
+        private readonly IDateTimeProvieder dateTimeProvieder;
         private readonly IntraDayReportScheduleProcessorConfig reportConfig;
 
         public IntraDayReportScheduleProcessor(ILogger<IntraDayReportScheduleProcessor> logger,
                                                 IQueueService<IntraDaySchedule> queueService,
                                                 IPowerServiceClient powerServiceClient,
                                                 IIntraDayReportCsvWriter intraDayReportCsvWriter,
+                                                IDateTimeProvieder dateTimeProvieder,
                                                 IntraDayReportScheduleProcessorConfig reportConfig)
         {
             this.logger = logger;
             this.queueService = queueService;
             this.powerServiceClient = powerServiceClient;
             this.intraDayReportCsvWriter = intraDayReportCsvWriter;
+            this.dateTimeProvieder = dateTimeProvieder;
             this.reportConfig = reportConfig;
         }
 
@@ -68,19 +71,20 @@ namespace PowerTrade.Business.Services.Implementations
                     await queueService.AddAsync(schedule);
                 }
                 else
-                    logger.LogError("Schedule at local time {@scheduleTime} cannot be processed after retries", ex, schedule.ScheduleLocalTime);
+                    logger.LogError("Schedule {@schedule} cannot be processed after retries", ex, schedule);
             }
         }
 
         private async Task ProcessSchedule(IntraDaySchedule schedule)
         {
-            var nextDayDate = schedule.ScheduleLocalTime.ToNextDayDate();
+            var localTime = dateTimeProvieder.GetLocalTime(schedule.ScheduleUtcTime, reportConfig.LocalTimezoneId);
+            var nextDayDate = localTime.ToNextDayDate();
             logger.LogDebug("Requesting trade data for {@nextDayDate}", nextDayDate);
 
             var trades = await powerServiceClient.GetTradesAsync(nextDayDate);
             logger.LogDebug("Response from PowerService: {@trades}", (object)trades);
 
-            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleLocalTime, reportConfig.LocalTimezoneId);
+            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleUtcTime, reportConfig.LocalTimezoneId);
             logger.LogDebug("Aggregated Data: {@aggregatedTrades}", (object)aggregatedTrades);
 
             await intraDayReportCsvWriter.GenerateAsync(schedule.ScheduleUtcTime, nextDayDate, aggregatedTrades);
