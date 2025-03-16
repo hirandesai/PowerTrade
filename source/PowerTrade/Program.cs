@@ -25,8 +25,7 @@ var builder = Host.CreateDefaultBuilder(args)
                     })
                     .ConfigureServices((hostContext, services) =>
                     {
-
-                        services.AddAppLogging();
+                        services.AddAppLogging(hostContext.Configuration);
                         services.AddAppServices(hostContext.Configuration);
                     })
                     .UseConsoleLifetime()
