@@ -65,7 +65,7 @@ namespace PowerTrade.Infrastructure.Configurations
                                                     powerServiceClient,
                                                     intraDayReportCsvWriter,
                                                     dateTimeProvider,
-                                                    new IntraDayReportScheduleProcessorConfig(intraDayReportConfig.LocalTimezoneId));
+                                                    new IntraDayReportScheduleProcessorConfig(intraDayReportConfig.LocalTimeZoneId));
             });
         }
 
@@ -94,17 +94,17 @@ namespace PowerTrade.Infrastructure.Configurations
             if (string.IsNullOrEmpty(intraDayReportConfig.Value.CsvDelimiter))
                 throw new ArgumentNullException($"{nameof(IntraDayReportConfig.CsvDelimiter)} cannot be empty.");
 
-            if (string.IsNullOrEmpty(intraDayReportConfig.Value.LocalTimezoneId))
-                throw new ArgumentNullException($"{nameof(IntraDayReportConfig.LocalTimezoneId)} cannot be empty.");
+            if (string.IsNullOrEmpty(intraDayReportConfig.Value.LocalTimeZoneId))
+                throw new ArgumentNullException($"{nameof(IntraDayReportConfig.LocalTimeZoneId)} cannot be empty.");
 
             try
             {
-                TimeZoneInfo.FindSystemTimeZoneById(intraDayReportConfig.Value.LocalTimezoneId);
+                TimeZoneInfo.FindSystemTimeZoneById(intraDayReportConfig.Value.LocalTimeZoneId);
             }
             catch (Exception ex)
             {
                 if (ex is TimeZoneNotFoundException || ex is InvalidTimeZoneException || ex is SecurityException)
-                    throw new ArgumentException($"{nameof(IntraDayReportConfig.LocalTimezoneId)} ({intraDayReportConfig.Value.LocalTimezoneId}) is not valid.");
+                    throw new ArgumentException($"{nameof(IntraDayReportConfig.LocalTimeZoneId)} ({intraDayReportConfig.Value.LocalTimeZoneId}) is not valid.");
 
                 throw;
             }

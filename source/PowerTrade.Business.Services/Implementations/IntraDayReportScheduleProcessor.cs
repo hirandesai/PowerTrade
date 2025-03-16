@@ -85,14 +85,14 @@ namespace PowerTrade.Business.Services.Implementations
 
         private async Task ProcessSchedule(IntraDaySchedule schedule)
         {
-            var localTime = dateTimeProvieder.GetLocalTime(schedule.ScheduleUtcTime, reportConfig.LocalTimezoneId);
+            var localTime = dateTimeProvieder.GetLocalTime(schedule.ScheduleUtcTime, reportConfig.LocalTimeZoneId);
             var nextDayDate = localTime.ToNextDayDate();
             logger.LogDebug("Requesting trade data for {@nextDayDate}", nextDayDate);
 
             var trades = await powerServiceClient.GetTradesAsync(nextDayDate);
             logger.LogDebug("Response from PowerService: {@trades}", (object)trades);
 
-            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleUtcTime, reportConfig.LocalTimezoneId);
+            var aggregatedTrades = trades.ToAggregated(schedule.ScheduleUtcTime, reportConfig.LocalTimeZoneId);
             logger.LogDebug("Aggregated Data: {@aggregatedTrades}", (object)aggregatedTrades);
 
             await intraDayReportCsvWriter.GenerateAsync(schedule.ScheduleUtcTime, nextDayDate, aggregatedTrades);

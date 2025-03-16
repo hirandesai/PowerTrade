@@ -2,11 +2,11 @@
 {
     public record IntraDayReportScheduleProcessorConfig
     {
-        public string LocalTimezoneId { get; private set; }
+        public string LocalTimeZoneId { get; private set; }
         
-        public IntraDayReportScheduleProcessorConfig(string localTimezoneId)
+        public IntraDayReportScheduleProcessorConfig(string localTimeZoneId)
         {
-            LocalTimezoneId = localTimezoneId;
+            LocalTimeZoneId = localTimeZoneId;
         }
     }
 }
