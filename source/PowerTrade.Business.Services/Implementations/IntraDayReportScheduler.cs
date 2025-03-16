@@ -30,17 +30,16 @@ namespace PowerTrade.Business.Services.Implementations
             {
                 await Actions.ExecuteWithErrorHandle(async () =>
                 {
-                    var currentLocalTime = dateTimeProvieder.CurrentTime;
-                    var currentUtcTime = dateTimeProvieder.CurrentUtcTime;
-                    logger.LogInformation($"Triggering new scheule at local {currentLocalTime}");
+                    var schedule = new IntraDaySchedule(dateTimeProvieder.CurrentTime, dateTimeProvieder.CurrentUtcTime);                    
+                    logger.LogInformation("Triggering new scheule {@schedule}", schedule);
 
-                    await queueService.AddAsync(new IntraDaySchedule(currentLocalTime, currentUtcTime));
+                    await queueService.AddAsync(schedule);
 
                     await Task.Delay(GetWaitTimeInMs);
                 }, logger);
 
             }
-            logger.LogInformation("Stopping scheduler, cancellation was requested");
+            logger.LogInformation("Stopping scheduler, cancellation was requested!");
         }
 
         private int GetWaitTimeInMs => config.FrequencyInSec * 1000;
