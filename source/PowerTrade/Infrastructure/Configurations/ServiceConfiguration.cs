@@ -42,10 +42,13 @@ namespace PowerTrade.Infrastructure.Configurations
 
             serviceProvider.AddScoped<IIntraDayReportCsvWriter>(serviceProvider =>
             {
+                var logger = serviceProvider.GetService<ILogger<IntraDayReportCsvWriter>>();
                 var fileService = serviceProvider.GetService<IFileService>();
                 var intraDayReportConfig = GetIntraDayReportConfig(serviceProvider);
 
-                return new IntraDayReportCsvWriter(fileService, new IntraDayReportCsvConfig(intraDayReportConfig.ReportPath, intraDayReportConfig.CsvDelimiter));
+                return new IntraDayReportCsvWriter(logger,
+                                                    fileService,
+                                                    new IntraDayReportCsvConfig(intraDayReportConfig.ReportPath, intraDayReportConfig.CsvDelimiter));
             });
 
             serviceProvider.AddScoped<IIntraDayReportScheduleProcessor>(serviceProvider =>

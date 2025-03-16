@@ -9,7 +9,7 @@ namespace PowerTrade.Services.Implementations
             return new StreamWriter(filePath, new FileStreamOptions()
             {
                 Mode = FileMode.Create,
-                //Access = FileAccess.Write
+                Access = FileAccess.Write
             });
         }
     }

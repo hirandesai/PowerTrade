@@ -40,7 +40,11 @@ namespace PowerTrade.Business.Services.Implementations
                     if (schedule != null)
                         await ProcessScheduleWithRetry(schedule);
                     else
+                    {
+                        logger.LogInformation("No schedule to process");
                         await Task.Delay(DelayTimeWhenScheduleIsNotFound * 1000);
+                    }
+
                 }, logger);
             }
             logger.LogInformation("Stopping schedule processor");
