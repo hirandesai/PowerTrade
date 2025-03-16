@@ -50,7 +50,7 @@ namespace PowerTrade.Infrastructure.Configurations
 
             serviceProvider.AddScoped<IIntraDayReportScheduleProcessor>(serviceProvider =>
             {
-                var logger = serviceProvider.GetService<ILogger<IntraDayReportScheduler>>();
+                var logger = serviceProvider.GetService<ILogger<IntraDayReportScheduleProcessor>>();
                 var queueService = serviceProvider.GetService<IQueueService<IntraDaySchedule>>();
                 var powerServiceClient = serviceProvider.GetService<IPowerServiceClient>();
                 var intraDayReportCsvWriter = serviceProvider.GetService<IIntraDayReportCsvWriter>();
