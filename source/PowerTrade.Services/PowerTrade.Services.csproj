@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="PowerService">
+      <HintPath>..\..\ExternalLib\PowerService\PowerService.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
